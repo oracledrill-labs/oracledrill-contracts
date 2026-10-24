@@ -1,0 +1,35 @@
+name: Oracle failure tests
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: oracledrill-labs/oracledrill-contracts
+          path: oracledrill-contracts
+          ref: ${{ github.sha }}
+      - uses: actions/checkout@v4
+        with:
+          repository: oracledrill-labs/oracledrill-scenario-engine
+          path: oracledrill-scenario-engine
+      - uses: actions/checkout@v4
+        with:
+          repository: oracledrill-labs/oracledrill-backend
+          path: oracledrill-backend
+      - uses: actions/checkout@v4
+        with:
+          repository: oracledrill-labs/oracledrill-frontend
+          path: oracledrill-frontend
+      - uses: actions/checkout@v4
+        with:
+          repository: oracledrill-labs/oracledrill-fixtures
+          path: oracledrill-fixtures
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - uses: dtolnay/rust-toolchain@stable
+      - run: node --test oracledrill-*/test.mjs
+      - run: cargo test --locked --manifest-path oracledrill-contracts/Cargo.toml
